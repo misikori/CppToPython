@@ -1,4 +1,5 @@
 import ast.*;
+import org.antlr.v4.codegen.model.decl.Decl;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
@@ -25,10 +26,11 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitFunctionDefinition(CPP14Parser.FunctionDefinitionContext ctx) {
-        String functionName = extractFunctionName(ctx.declarator());
+
+        DeclaratorNode functionDeclaration = (DeclaratorNode) visit(ctx.declarator());
         String return_value = ctx.declSpecifierSeq().getText();
 
-        FunctionNode functionNode = new FunctionNode(return_value, functionName);
+        FunctionNode functionNode = new FunctionNode(return_value, functionDeclaration.toString());
 
         if (ctx.functionBody().compoundStatement() != null &&
                 ctx.functionBody().compoundStatement().statementSeq() != null) {
@@ -44,14 +46,69 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         return functionNode;
     }
 
+    @Override
+    public ASTNode visitDeclarator(CPP14Parser.DeclaratorContext ctx) {
 
-    private String extractFunctionName(CPP14Parser.DeclaratorContext ctx) {
 
+        System.out.println("Declarator encountered.");
+        DeclaratorNode declaratorNode = new DeclaratorNode();
 
-        CPP14Parser.NoPointerDeclaratorContext noPointerCtx = ctx.pointerDeclarator().noPointerDeclarator().noPointerDeclarator();
-        System.out.println("Ovo " + noPointerCtx.getText());
+        if(ctx.pointerDeclarator() != null) {
+            ASTNode pointerDeclarator = visitPointerDeclarator(ctx.pointerDeclarator(), declaratorNode);
+        }
+        if(ctx.noPointerDeclarator() != null) {
+            ASTNode noPointerDeclarator = visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
+        }
+        System.out.println("This is my declarator" + declaratorNode.toString());
+        return declaratorNode;
+    }
 
-        return noPointerCtx.getText();
+    public ASTNode visitPointerDeclarator(CPP14Parser.PointerDeclaratorContext ctx, DeclaratorNode declaratorNode) {
+
+        System.out.println("PointerDeclarator encountered.");
+        if(ctx.noPointerDeclarator() != null) {
+            visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
+        }
+
+        return declaratorNode;
+    }
+
+    public ASTNode visitNoPointerDeclarator(CPP14Parser.NoPointerDeclaratorContext ctx, DeclaratorNode declaratorNode) {
+        System.out.println("NoPointerDeclarator encountered.");
+
+        if(ctx.noPointerDeclarator() != null) {
+            visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
+        }
+        if(ctx.parametersAndQualifiers() != null) {
+            visitParametersAndQualifiers(ctx.parametersAndQualifiers(), declaratorNode);
+        }
+        if(ctx.declaratorid() != null) {
+            declaratorNode.setName(processDeclaratorid(ctx.declaratorid()));
+        }
+        System.out.println("Declarator name" + declaratorNode.toString());
+        return declaratorNode;
+    }
+
+    public List<ParameterNode> visitParametersAndQualifiers(CPP14Parser.ParametersAndQualifiersContext ctx, DeclaratorNode declaratorNode) {
+
+        CPP14Parser.ParameterDeclarationClauseContext clause = ctx.parameterDeclarationClause();
+        CPP14Parser.ParameterDeclarationListContext list = ctx.parameterDeclarationClause().parameterDeclarationList();
+        ArrayList<ParameterNode> l = new ArrayList<>();
+        for(CPP14Parser.ParameterDeclarationContext elem : list.parameterDeclaration()) {
+
+            String declarationSpec = elem.declSpecifierSeq().getText();
+            DeclaratorNode declaration = (DeclaratorNode) visitDeclarator(elem.declarator());
+
+            ParameterNode p = new ParameterNode(declarationSpec,declaration);
+            l.add(p);
+        }
+        declaratorNode.setParams(l);
+        return new ArrayList<>();
+    }
+
+    public String processDeclaratorid(CPP14Parser.DeclaratoridContext ctx){
+        System.out.println("Declarator id encountered.");
+        return ctx.getText();
     }
 
 
