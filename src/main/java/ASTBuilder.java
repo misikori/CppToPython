@@ -25,6 +25,18 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     @Override
+    public ASTNode visitStatement(CPP14Parser.StatementContext ctx) {
+
+        if (ctx.declarationStatement() != null) {
+            if(ctx.declarationStatement().blockDeclaration() != null) {
+                return visitBlockDeclaration(ctx.declarationStatement().blockDeclaration());
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public ASTNode visitFunctionDefinition(CPP14Parser.FunctionDefinitionContext ctx) {
 
         DeclaratorNode functionDeclaration = (DeclaratorNode) visit(ctx.declarator());
@@ -47,6 +59,28 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     @Override
+    public ASTNode visitFunctionBody(CPP14Parser.FunctionBodyContext ctx) {
+
+        if(ctx.constructorInitializer() != null) {
+            // 0 or more constructor comprehension.
+        }
+
+        else if(ctx.compoundStatement() != null) {
+            return visitCompoundStatement(ctx.compoundStatement());
+        }
+
+        else if(ctx.functionTryBlock() != null) {
+            // ..
+        }
+
+        else{
+            // return ctx.getText() into FunctionBody Node.
+        }
+
+        return null;
+    }
+
+    @Override
     public ASTNode visitDeclarator(CPP14Parser.DeclaratorContext ctx) {
 
 
@@ -59,14 +93,26 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if(ctx.noPointerDeclarator() != null) {
             ASTNode noPointerDeclarator = visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
         }
-        System.out.println("This is my declarator" + declaratorNode.toString());
         return declaratorNode;
     }
 
     public ASTNode visitPointerDeclarator(CPP14Parser.PointerDeclaratorContext ctx, DeclaratorNode declaratorNode) {
 
         System.out.println("PointerDeclarator encountered.");
-        if(ctx.noPointerDeclarator() != null) {
+
+        if(ctx.pointerOperator() != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            for(var c : ctx.pointerOperator())
+            {
+                sb.append(c.getText());
+            }
+            declaratorNode.setPointer(sb.toString());
+            // something with * operator.
+        }
+
+        if(ctx.noPointerDeclarator() != null)
+        {
             visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
         }
 
@@ -85,7 +131,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if(ctx.declaratorid() != null) {
             declaratorNode.setName(processDeclaratorid(ctx.declaratorid()));
         }
-        System.out.println("Declarator name" + declaratorNode.toString());
         return declaratorNode;
     }
 
@@ -103,7 +148,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
             l.add(p);
         }
         declaratorNode.setParams(l);
-        return new ArrayList<>();
+        return l;
     }
 
     public String processDeclaratorid(CPP14Parser.DeclaratoridContext ctx){
@@ -120,7 +165,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
         if (ctx.statementSeq() != null) {
             for (CPP14Parser.StatementContext statementContext : ctx.statementSeq().statement()) {
-                ASTNode statementNode = visit(statementContext);
+                ASTNode statementNode = visitStatement(statementContext);
                 if (statementNode != null) {
                     statements.add(statementNode);
                 }
@@ -177,6 +222,38 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
             return null;
         }
         System.out.println("Unknown declaration type.");
+        return null;
+    }
+
+    @Override
+    public ASTNode visitSimpleDeclaration(CPP14Parser.SimpleDeclarationContext ctx) {
+
+        VariableDeclarationNode decl = new VariableDeclarationNode();
+
+        if (ctx.declSpecifierSeq() != null) {
+            decl.setType(ctx.declSpecifierSeq().getText());
+        }
+
+        if(ctx.initDeclaratorList() != null) {
+            for (var c : ctx.initDeclaratorList().initDeclarator()) {
+                DeclaratorNode node = (DeclaratorNode) visitDeclarator(c.declarator());
+                decl.setName(node.getDeclaratorId());
+                decl.setInitValue(c.initializer().braceOrEqualInitializer().getText());
+            }
+
+        }
+
+        return decl;
+    }
+
+    @Override
+    public ASTNode visitBlockDeclaration(CPP14Parser.BlockDeclarationContext ctx) {
+
+        if (ctx.simpleDeclaration() != null)
+        {
+            return visitSimpleDeclaration(ctx.simpleDeclaration());
+        }
+
         return null;
     }
 

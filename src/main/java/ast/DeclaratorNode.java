@@ -8,11 +8,13 @@ public class DeclaratorNode extends ASTNode {
     private  String declaratorId;
     private  String type;
     private List<ParameterNode> parameters;
+    private String pointer;
 
-    public DeclaratorNode(String declaratorId, String type, List<ParameterNode> parameters) {
+    public DeclaratorNode(String declaratorId, String type, List<ParameterNode> parameters, String pointer) {
         this.declaratorId = declaratorId;
         this.type = type;
         this.parameters = parameters;
+        this.pointer = pointer;
     }
 
     public DeclaratorNode() {
@@ -22,7 +24,23 @@ public class DeclaratorNode extends ASTNode {
 
     @Override
     public String toString() {
-        return "Declarator{" + "declaratorName='" + declaratorId + '\'' + ", type='" + type + '\'' + ", parameters=" + parameters + '}';
+        var sb = new StringBuilder();
+
+        if(this.pointer != null)
+            sb.append(this.pointer);
+
+        if (this.declaratorId != null)
+            sb.append(this.declaratorId);
+
+        if(this.type != null)
+            sb.append(this.type);
+
+        if(this.parameters != null) {
+            sb.append("(");
+            sb.append(this.parameters.toString());
+            sb.append(")\n");
+        }
+        return sb.toString();
     }
 
     public void setName(String s) {
@@ -31,5 +49,17 @@ public class DeclaratorNode extends ASTNode {
 
     public void setParams(ArrayList<ParameterNode> l) {
         this.parameters = l;
+    }
+
+    public void setPointer(String s) {
+        this.pointer = s;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getDeclaratorId() {
+        return declaratorId;
     }
 }

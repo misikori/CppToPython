@@ -29,13 +29,14 @@ public class example {
         System.out.println("------------------------");
         System.out.println(ast);
         System.out.println("------------------------");
+
         JFrame frame = new JFrame("ANTLR");
         TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-        viewer.setScale(1.0);
-
-        frame.add(viewer);
+        viewer.setScale(1.0); // Adjust the scale as needed
+        JScrollPane scrollPane = new JScrollPane(viewer);
+        frame.add(scrollPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,600);
+        frame.setSize(800, 600);
         frame.setVisible(true);
 
 
