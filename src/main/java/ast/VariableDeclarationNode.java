@@ -1,24 +1,25 @@
 package ast;
 
 public class VariableDeclarationNode extends ASTNode {
-    private String name;
-    private String type;
-    private String initValue;
 
-    public VariableDeclarationNode(String name, String type, String initValue) {
+    private String type;
+    private DeclaratorNode name;
+    private ExpressionNode expression;
+
+    public VariableDeclarationNode(DeclaratorNode name, String type, ExpressionNode expression) {
         this.name = name;
         this.type = type;
-        this.initValue = initValue;
+        this.expression = expression;
     }
 
     public VariableDeclarationNode() {}
 
     @Override
     public String toString() {
-        return "VariableDeclaration{" + "name='" + name + '\'' + ", type='" + type + '\'' + ", initValue='" + initValue + '\'' + '}';
+        return "VariableDeclaration{" + "name='" + name + '\'' + ", type='" + type + '\'' + ", expression='" + expression + '\'' + '}';
     }
 
-    public void setName(String name) {
+    public void setName(DeclaratorNode name) {
         this.name = name;
     }
 
@@ -26,11 +27,11 @@ public class VariableDeclarationNode extends ASTNode {
         this.type = type;
     }
 
-    public void setInitValue(String initValue) {
-        this.initValue = initValue;
+    public void setInitValue(ExpressionNode expression) {
+        this.expression = expression;
     }
 
-    public String getName() {
+    public DeclaratorNode getName() {
         return name;
     }
 
@@ -38,7 +39,7 @@ public class VariableDeclarationNode extends ASTNode {
         return type;
     }
 
-    public String getInitValue() {
-        return initValue;
+    public ExpressionNode getInitValue() {
+        return expression;
     }
 }
