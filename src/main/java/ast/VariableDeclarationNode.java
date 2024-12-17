@@ -4,7 +4,7 @@ public class VariableDeclarationNode extends ASTNode {
 
     private String type;
     private DeclaratorNode name;
-    private ExpressionNode expression;
+    private ASTNode expression;
 
     public VariableDeclarationNode(DeclaratorNode name, String type, ExpressionNode expression) {
         this.name = name;
@@ -27,7 +27,7 @@ public class VariableDeclarationNode extends ASTNode {
         this.type = type;
     }
 
-    public void setInitValue(ExpressionNode expression) {
+    public void setInitValue(ASTNode expression) {
         this.expression = expression;
     }
 
@@ -39,7 +39,7 @@ public class VariableDeclarationNode extends ASTNode {
         return type;
     }
 
-    public ExpressionNode getInitValue() {
+    public ASTNode getInitValue() {
         return expression;
     }
 }

@@ -29,7 +29,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if (ctx.declarationStatement() != null) {
 
             VariableDeclarationNode variableDeclaration = new VariableDeclarationNode();
-            visitBlockDeclaration(ctx.declarationStatement(), variableDeclaration);
+            visitDeclarationStatement(ctx.declarationStatement(), variableDeclaration);
             return variableDeclaration;
         }
         if (ctx.selectionStatement() != null) {
@@ -48,10 +48,10 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         return null;
     }
 
-    private void visitBlockDeclaration(CPP14Parser.DeclarationStatementContext ctx, VariableDeclarationNode variable) {
+    private void visitDeclarationStatement(CPP14Parser.DeclarationStatementContext ctx, VariableDeclarationNode variable) {
 
         if(ctx.blockDeclaration() != null) {
-            visitBlockDeclaration(ctx.blockDeclaration(), variable );
+            visitBlockDeclaration(ctx.blockDeclaration(), variable);
         }
     }
 
@@ -270,8 +270,8 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
                 variable.setName(node);
 
                 if(c.initializer() != null) {
-                    ExpressionNode expression = new ExpressionNode(c.initializer().braceOrEqualInitializer().getText());
-                    visitInitializer(c.initializer(),expression);
+
+                    var expression = visitInitializer(c.initializer());
 
                     variable.setInitValue(expression);
                 }
@@ -281,53 +281,73 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     }
 
-    private void visitInitializer(CPP14Parser.InitializerContext ctx, ExpressionNode expression) {
+    public ASTNode visitInitializer(CPP14Parser.InitializerContext ctx) {
 
         if (ctx.braceOrEqualInitializer() != null) {
 
-            visitInitializerClause(ctx.braceOrEqualInitializer().initializerClause(), expression);
+            return visitInitializerClause(ctx.braceOrEqualInitializer().initializerClause());
         }
+        return null;
     }
 
-    private void visitInitializerClause(CPP14Parser.InitializerClauseContext ctx, ExpressionNode expression) {
+    public ASTNode visitInitializerClause(CPP14Parser.InitializerClauseContext ctx) {
         if (ctx.assignmentExpression() != null) {
-            visitAssignmentExpression(ctx.assignmentExpression(), expression);
+            visitAssignmentExpression(ctx.assignmentExpression());
         }
+        return null;
     }
 
-    private void visitAssignmentExpression(CPP14Parser.AssignmentExpressionContext ctx, ExpressionNode expression) {
+    public ASTNode visitAssignmentExpression(CPP14Parser.AssignmentExpressionContext ctx) {
+
         if(ctx.conditionalExpression() != null) {
 
-            visitConditionalExpression(ctx.conditionalExpression(),expression);
+            var conditional = new ConditionalExpressionNode();
+            visitConditionalExpression(ctx.conditionalExpression(),conditional);
+            return conditional;
 
         }
         if(ctx.logicalOrExpression() != null) {
-
-        }
-    }
-
-    private void visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ExpressionNode expression) {
-
-        if(ctx.logicalOrExpression() != null) {
+            var expression = new ExpressionNode();
             visitLogicalOrExpression(ctx.logicalOrExpression(), expression);
+            return expression;
+        }
+
+        return null;
+    }
+    // a || b || c || d
+    private void visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ConditionalExpressionNode conditional) {
+
+        if(ctx.logicalOrExpression() != null) {
+            visitLogicalOrExpression(ctx.logicalOrExpression());
+        }
+
+        if(ctx.Question() != null) {
+            var expression = new ExpressionNode();
+//            visitExpression(ctx.expression(), expression);
         }
     }
 
     private void visitLogicalOrExpression(CPP14Parser.LogicalOrExpressionContext ctx, ExpressionNode expression) {
+
+//        ExpressionNode left = visitLogicalAndExpression(ctx.logicalAndExpression(0), expression);
+        for(int i = 1; i < ctx.logicalAndExpression().size(); i++){
+//            ExpressionNode right = visitLogicalAndExpression(ctx.logicalAndExpression(i), expression);
+//            left = new BinaryExpressionNode();
+        }
         if(ctx.logicalAndExpression() != null) {
 
-            visitLogicalAndExpression(ctx.logicalAndExpression(), expression);
+//            visitLogicalAndExpression(ctx.logicalAndExpression(), expression);
         }
     }
 
-    private void visitLogicalAndExpression(List<CPP14Parser.LogicalAndExpressionContext> ctx, ExpressionNode expression) {
+    private void visitLogicalAndExpression(CPP14Parser.LogicalAndExpressionContext ctx, ExpressionNode expression) {
 
     }
 
 
     @Override
     public ASTNode visitExpressionStatement(CPP14Parser.ExpressionStatementContext ctx) {
-        return new ExpressionNode(ctx.expression().getText());
+        return null;
     }
 
 
