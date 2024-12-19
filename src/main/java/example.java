@@ -16,7 +16,17 @@ public class example {
                 std::cout << "Hello, C++!";
                 """;
 
-        CharStream charStream = CharStreams.fromString("#include<iostream>\n\n int main(){\nif(x>y){ x = a || b || (c && d);} \n else{ x = 3;}\n for(int i=0; i < n;i++){y = i > x ? i : x;};\n vector<int> ovo = new vector<int>(5,0);\n int *x = 5;\n std::cout << \"Hello, C++!\";\n}");
+        CharStream charStream = CharStreams.fromString("#include<iostream>\n\n int main(){\n" +
+                "if(x>y){ x = a || b || (c && d);} \n else{ x = 3;}\n" +
+                "    switch (choice) {\n" +
+                "        case 1:\n" +
+                "            cout << \"You selected option 1.\" << endl;\n" +
+                "            break;\n" +
+                "        default:\n" +
+                "            cout << \"Invalid choice. Please select a number between 1 and 3.\" << endl;\n" +
+                "            break;\n" +
+                "    } \n" +
+                "std::cout << \"Hello, C++!\";\n}");
 
         CPP14Lexer lexer = new CPP14Lexer(charStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);

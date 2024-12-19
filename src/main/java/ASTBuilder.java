@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
@@ -26,6 +27,11 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitStatement(CPP14Parser.StatementContext ctx) {
 
+        if(ctx.compoundStatement() != null){
+
+            return visitCompoundStatement(ctx.compoundStatement());
+        }
+
         if (ctx.declarationStatement() != null) {
 
             VariableDeclarationNode variableDeclaration = new VariableDeclarationNode();
@@ -36,16 +42,80 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
             CPP14Parser.SelectionStatementContext context = ctx.selectionStatement();
 
-            String condition = String.valueOf(context.condition());
-            String type = String.valueOf(context.statement(0));
-           // SelectionNode selectionNode =  new SelectionNode(type);
-            for(var i : context.statement()){
+            String type = context.getStart().getText();
+            ASTNode condition =  visitCondition(context.condition());
 
-                //if(i.c)
+            if(type.equals("If") || type.equals("if")){
+
+                SelectionIFNode ifNode = new SelectionIFNode();
+                ifNode.setType(type);
+                ifNode.setCondition(condition);
+                for(var statement : context.statement()){
+
+                    ASTNode tmp = visitStatement(statement);
+                    ifNode.addIfNode(tmp);
+
+                }
+
+                return ifNode;
             }
+            // SWITCH
+            else{
+                SelectionSwitchNode switchNode = new SelectionSwitchNode();
+                switchNode.setType(type);
+                switchNode.setCondition(condition);
+                for(var statement : context.statement()){
+
+                    ASTNode tmp = visitStatement(statement);
+                    switchNode.addCase(tmp);
+                }
+                return switchNode;
+            }
+
+        }
+        if (ctx.expressionStatement() != null) {
+            System.out.println("ExpressionStatement");
+            CPP14Parser.ExpressionStatementContext context = ctx.expressionStatement();
+            CPP14Parser.ExpressionContext exp = context.expression();
+            return visitExpression(exp);
         }
 
+        if (ctx.labeledStatement() != null) {
+
+            LabeledStatement  labeledStatement = new LabeledStatement();
+            return visitLabeledStatement(ctx.labeledStatement(), labeledStatement);
+        }
+        if (ctx.jumpStatement() != null) {
+            JumpStatement jumpStatement = new JumpStatement();
+
+            return visitJumpStatement(ctx.jumpStatement(), jumpStatement);
+        }
         return null;
+    }
+
+    private ASTNode visitJumpStatement(CPP14Parser.JumpStatementContext ctx, JumpStatement statement) {
+        statement.setName(ctx.toString());
+        return statement;
+    }
+
+    private ASTNode visitLabeledStatement(CPP14Parser.LabeledStatementContext ctx, LabeledStatement statement) {
+
+        System.out.println("LabeledStatement");
+        String  lable = ctx.getText();
+        statement.setLabel(lable);
+        statement.setBody(visitStatement(ctx.statement()));
+        //TODO: add for Visit for ConstrantExprestion and  other Expreseion for conditional part of switch
+        return statement;
+    }
+
+    @Override
+    public ASTNode visitCondition(CPP14Parser.ConditionContext ctx){
+
+       return visitExpression(ctx.expression());
+    }
+    public ASTNode visitExpression(CPP14Parser.ExpressionContext ctx) {
+
+        return visitAssignmentExpression(ctx.assignmentExpression(0));
     }
 
     private void visitDeclarationStatement(CPP14Parser.DeclarationStatementContext ctx, VariableDeclarationNode variable) {
@@ -282,66 +352,174 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     public ASTNode visitInitializer(CPP14Parser.InitializerContext ctx) {
-
+        System.out.println("Initializer encountered.");
         if (ctx.braceOrEqualInitializer() != null) {
-
+            //TODO add if you have braces
             return visitInitializerClause(ctx.braceOrEqualInitializer().initializerClause());
         }
         return null;
     }
 
     public ASTNode visitInitializerClause(CPP14Parser.InitializerClauseContext ctx) {
+        System.out.println("Initializer clause encountered.");
         if (ctx.assignmentExpression() != null) {
-            visitAssignmentExpression(ctx.assignmentExpression());
+            return visitAssignmentExpression(ctx.assignmentExpression());
         }
         return null;
     }
 
     public ASTNode visitAssignmentExpression(CPP14Parser.AssignmentExpressionContext ctx) {
-
+        System.out.println("Assignment expression encountered.");
+        //TODO SHOULD CHANGE THIS
         if(ctx.conditionalExpression() != null) {
 
-            var conditional = new ConditionalExpressionNode();
+            ExpressionNode conditional = new ExpressionNode();
             visitConditionalExpression(ctx.conditionalExpression(),conditional);
             return conditional;
 
         }
-        if(ctx.logicalOrExpression() != null) {
-            var expression = new ExpressionNode();
-            visitLogicalOrExpression(ctx.logicalOrExpression(), expression);
-            return expression;
-        }
 
         return null;
     }
-    // a || b || c || d
-    private void visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ConditionalExpressionNode conditional) {
 
+
+    public void visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ExpressionNode conditional) {
+
+        System.out.println("Conditional expression encountered.");
         if(ctx.logicalOrExpression() != null) {
-            visitLogicalOrExpression(ctx.logicalOrExpression());
+            visitLogicalOrExpression(ctx.logicalOrExpression(), conditional);
         }
 
         if(ctx.Question() != null) {
             var expression = new ExpressionNode();
-//            visitExpression(ctx.expression(), expression);
+//            return visitExpression(ctx.expression(), expression);
         }
     }
+    private  <T> void visitExpression_temp(
+            List<T> list,
+            String type,
+            ExpressionNode expression,
+            BiConsumer<T, ExpressionNode> visitor
+        ){
+            //System.out.println(visitor);
 
+            if (list.size() > 1){
+                expression.setType(type);
+                for (T item : list) {
+                    ExpressionNode tmp = new ExpressionNode();
+                    visitor.accept(item, tmp);
+                    expression.addChildren(tmp);
+                }
+            }else{
+                visitor.accept(list.getFirst(), expression);
+            }
+
+        }
     private void visitLogicalOrExpression(CPP14Parser.LogicalOrExpressionContext ctx, ExpressionNode expression) {
-
-//        ExpressionNode left = visitLogicalAndExpression(ctx.logicalAndExpression(0), expression);
-        for(int i = 1; i < ctx.logicalAndExpression().size(); i++){
-//            ExpressionNode right = visitLogicalAndExpression(ctx.logicalAndExpression(i), expression);
-//            left = new BinaryExpressionNode();
-        }
-        if(ctx.logicalAndExpression() != null) {
-
-//            visitLogicalAndExpression(ctx.logicalAndExpression(), expression);
-        }
+        visitExpression_temp(
+                ctx.logicalAndExpression(),
+                "LogicalOrExpression",
+                expression,
+                this::visitLogicalAndExpression
+        );
     }
 
     private void visitLogicalAndExpression(CPP14Parser.LogicalAndExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.inclusiveOrExpression(),
+                "LogicalAndExpression",
+                expression,
+                this::visitInclusiveOrExpression
+        );
+    }
 
+    private void visitInclusiveOrExpression(CPP14Parser.InclusiveOrExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.exclusiveOrExpression(),
+                "InclusiveOrExpression",
+                expression,
+                this::visitExclusiveOrExpression
+        );
+    }
+
+    private void visitExclusiveOrExpression(CPP14Parser.ExclusiveOrExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.andExpression(),
+                "ExclusiveOrExpression",
+                expression,
+                this::visitAndExpression
+        );
+    }
+
+    private void visitAndExpression(CPP14Parser.AndExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.equalityExpression(),
+                "AndExpression",
+                expression,
+                this::visitEqualityExpression
+        );
+    }
+
+    private void visitEqualityExpression(CPP14Parser.EqualityExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.relationalExpression(),
+                "EqualityExpression",
+                expression,
+                this::visitRelationalExpression
+        );
+    }
+
+    private void visitRelationalExpression(CPP14Parser.RelationalExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.shiftExpression(),
+                "RelationalExpression",
+                expression,
+                this::visitShiftExpression
+        );
+    }
+
+    private void visitShiftExpression(CPP14Parser.ShiftExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.additiveExpression(),
+                "ShiftExpression",
+                expression,
+                this::visitAdditiveExpression
+        );
+    }
+
+    private void visitAdditiveExpression(CPP14Parser.AdditiveExpressionContext ctx, ExpressionNode expression) {
+
+        visitExpression_temp(
+                ctx.multiplicativeExpression(),
+                "AdditiveExpression",
+                expression,
+                this::visitMultiplicativeExpression
+        );
+    }
+
+    private void visitMultiplicativeExpression(CPP14Parser.MultiplicativeExpressionContext ctx, ExpressionNode expression) {
+        visitExpression_temp(
+                ctx.pointerMemberExpression(),
+                "MultiplicativeExpression",
+                expression,
+                this::visitPointerMemberExpression
+        );
+    }
+
+    private void visitPointerMemberExpression(CPP14Parser.PointerMemberExpressionContext ctx, ExpressionNode expression) {
+
+        visitExpression_temp(
+                ctx.castExpression(),
+                "PointerMemberExpression",
+                expression,
+                this::visitCastExpression
+        );
+    }
+
+    private void visitCastExpression(CPP14Parser.CastExpressionContext ctx, ExpressionNode expression) {
+
+        expression.setType("Cast Expression");
+        expression.setType(ctx.getText());
     }
 
 

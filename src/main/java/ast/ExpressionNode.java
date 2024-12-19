@@ -1,10 +1,12 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpressionNode extends ASTNode {
     private String type;
-    private List<ExpressionNode> children;
+    private List<ExpressionNode> children = new ArrayList<ExpressionNode>();
+    private String value;
 
     public ExpressionNode() {
     }
@@ -29,6 +31,12 @@ public class ExpressionNode extends ASTNode {
         this.children = children;
         this.type = type;
     }
+    public String getValue() {
+        return value;
+    }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
     public void addChildren(ExpressionNode child)
     {
@@ -37,6 +45,9 @@ public class ExpressionNode extends ASTNode {
 
     @Override
     public String toString() {
-        return type;
+        if (children == null || children.size() == 0){
+            return type + " " + value;
+        }
+        return  type + "{ value: " + value +  " ,children: [" + children + "] }";
     }
 }
