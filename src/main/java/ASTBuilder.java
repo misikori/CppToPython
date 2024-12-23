@@ -553,11 +553,41 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     private void visitCastExpression(CPP14Parser.CastExpressionContext ctx, ExpressionNode expression) {
-
-        expression.setType("Cast Expression");
-        expression.setValue(ctx.getText());
+        if (ctx.unaryExpression() != null) {
+            visitUnaryExpression(ctx.unaryExpression(), expression);
+        }
+//        expression.setType("Cast Expression");
+//        expression.setValue(ctx.getText());
     }
 
+
+    private void visitUnaryExpression(CPP14Parser.UnaryExpressionContext ctx, ExpressionNode expression){
+        if (ctx.postfixExpression() != null) {
+            visitPostfixExpression(ctx.postfixExpression(), expression);
+        }
+    }
+
+    private void visitPostfixExpression(CPP14Parser.PostfixExpressionContext ctx, ExpressionNode expression) {
+        if (ctx.primaryExpression() != null) {
+            visitPrimaryExpression(ctx.primaryExpression(), expression);
+        }
+    }
+
+    private void visitPrimaryExpression(CPP14Parser.PrimaryExpressionContext ctx, ExpressionNode expression) {
+        if (ctx.literal() != null) {
+            // for l in literal ..
+            var l = new LiteralNode();
+            l.setValue(ctx.getText());
+        }
+
+        if (ctx.expression() != null) {
+            visitExpression(ctx.expression());
+        }
+
+        if (ctx.idExpression() != null) {
+            // visitIdExpression..
+        }
+    }
 
     @Override
     public ASTNode visitExpressionStatement(CPP14Parser.ExpressionStatementContext ctx) {
