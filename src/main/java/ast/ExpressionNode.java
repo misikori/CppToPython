@@ -45,9 +45,18 @@ public class ExpressionNode extends ASTNode {
 
     @Override
     public String toString() {
-        if (children == null || children.size() == 0){
-            return type + " " + value;
+        StringBuilder str = new StringBuilder();
+        str.append(type);
+        str.append("{");
+        if(value != null){
+            str.append(" value: ").append(value);
         }
-        return  type + "{ value: " + value +  " ,children: [" + children + "] }";
+        if(!children.isEmpty()){
+            str.append(" children:").append(children);
+        }
+        str.append("}");
+
+        return str.toString();
+
     }
 }

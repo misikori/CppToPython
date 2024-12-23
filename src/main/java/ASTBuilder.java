@@ -398,6 +398,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     private  <T> void visitExpression_temp(
             List<T> list,
             String type,
+            String value,
             ExpressionNode expression,
             BiConsumer<T, ExpressionNode> visitor
         ){
@@ -405,6 +406,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
             if (list.size() > 1){
                 expression.setType(type);
+                expression.setValue(value);
                 for (T item : list) {
                     ExpressionNode tmp = new ExpressionNode();
                     visitor.accept(item, tmp);
@@ -416,72 +418,101 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
         }
     private void visitLogicalOrExpression(CPP14Parser.LogicalOrExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.logicalAndExpression(),
                 "LogicalOrExpression",
+                value,
                 expression,
                 this::visitLogicalAndExpression
         );
     }
 
     private void visitLogicalAndExpression(CPP14Parser.LogicalAndExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.inclusiveOrExpression(),
                 "LogicalAndExpression",
+                value,
                 expression,
                 this::visitInclusiveOrExpression
         );
     }
 
     private void visitInclusiveOrExpression(CPP14Parser.InclusiveOrExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.exclusiveOrExpression(),
                 "InclusiveOrExpression",
+                value,
                 expression,
                 this::visitExclusiveOrExpression
         );
     }
 
     private void visitExclusiveOrExpression(CPP14Parser.ExclusiveOrExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.andExpression(),
                 "ExclusiveOrExpression",
+                value,
                 expression,
                 this::visitAndExpression
         );
     }
 
     private void visitAndExpression(CPP14Parser.AndExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.equalityExpression(),
                 "AndExpression",
+                value,
                 expression,
                 this::visitEqualityExpression
         );
     }
 
     private void visitEqualityExpression(CPP14Parser.EqualityExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.relationalExpression(),
                 "EqualityExpression",
+                value,
                 expression,
                 this::visitRelationalExpression
         );
     }
 
     private void visitRelationalExpression(CPP14Parser.RelationalExpressionContext ctx, ExpressionNode expression) {
+
+        String value = ctx.Greater().toString();
+        if (ctx.GreaterEqual() != null) {
+            value  = ">=";
+        }else if(ctx.LessEqual() != null){
+            value = "<=";
+        }else if(ctx.Greater()!=null){
+            value = ">";
+        }else if(ctx.Less()!=null){
+            value = "<";
+        }else{
+            value = "";
+        }
+        System.out.println("Opet djubre jedno " + value );
         visitExpression_temp(
                 ctx.shiftExpression(),
                 "RelationalExpression",
+                value,
                 expression,
                 this::visitShiftExpression
         );
     }
 
     private void visitShiftExpression(CPP14Parser.ShiftExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.additiveExpression(),
                 "ShiftExpression",
+                value,
                 expression,
                 this::visitAdditiveExpression
         );
@@ -489,28 +520,33 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     private void visitAdditiveExpression(CPP14Parser.AdditiveExpressionContext ctx, ExpressionNode expression) {
 
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.multiplicativeExpression(),
                 "AdditiveExpression",
+                value,
                 expression,
                 this::visitMultiplicativeExpression
         );
     }
 
     private void visitMultiplicativeExpression(CPP14Parser.MultiplicativeExpressionContext ctx, ExpressionNode expression) {
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.pointerMemberExpression(),
                 "MultiplicativeExpression",
+                value,
                 expression,
                 this::visitPointerMemberExpression
         );
     }
 
     private void visitPointerMemberExpression(CPP14Parser.PointerMemberExpressionContext ctx, ExpressionNode expression) {
-
+        String value = ctx.getText();
         visitExpression_temp(
                 ctx.castExpression(),
                 "PointerMemberExpression",
+                value,
                 expression,
                 this::visitCastExpression
         );
@@ -519,7 +555,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     private void visitCastExpression(CPP14Parser.CastExpressionContext ctx, ExpressionNode expression) {
 
         expression.setType("Cast Expression");
-        expression.setType(ctx.getText());
+        expression.setValue(ctx.getText());
     }
 
 

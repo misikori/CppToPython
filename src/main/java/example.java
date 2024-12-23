@@ -17,7 +17,7 @@ public class example {
                 """;
 
         CharStream charStream = CharStreams.fromString("#include<iostream>\n\n int main(){\n" +
-                "if(x>y){ x = a || b || (c && d);} \n else{ x = 3;}\n" +
+                "if(x>=y){ x = a || b || (c && d);} \n else{ x = 3;}\n" +
                 "    switch (choice) {\n" +
                 "        case 1:\n" +
                 "            cout << \"You selected option 1.\" << endl;\n" +
