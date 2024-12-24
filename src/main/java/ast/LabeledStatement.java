@@ -1,10 +1,12 @@
 package ast;
 
+import java.beans.Expression;
+
 public class LabeledStatement extends ASTNode {
 
     private String label;
-    private ASTNode condition;
-    private ASTNode body;
+    private ASTNode caseExpression;
+    private ASTNode statement;
 
     public LabeledStatement() {
     }
@@ -13,28 +15,29 @@ public class LabeledStatement extends ASTNode {
         return label;
     }
 
+    public ASTNode getConstantExpression() {
+        return caseExpression;
+    }
+
+    public void setCaseExpression(ASTNode constantExpression) {
+        this.caseExpression = constantExpression;
+    }
+
+    public ASTNode getStatement() {
+        return statement;
+    }
+
+    public void setStatement(ASTNode statement) {
+        this.statement = statement;
+    }
+
     public void setLabel(String label) {
         this.label = label;
     }
 
-    public ASTNode getCondition() {
-        return condition;
-    }
-
-    public void setCondition(ASTNode condition) {
-        this.condition = condition;
-    }
-
-    public ASTNode getBody() {
-        return body;
-    }
-
-    public void setBody(ASTNode body) {
-        this.body = body;
-    }
 
     @Override
     public String toString() {
-        return "LabeledStatement {" + "label=" + label + ", condition=" + condition + ", body=" + body + '}';
+        return "LabeledStatement {" + "label=" + label + ", caseExpr=" + caseExpression + ", statement=" + statement + '}';
     }
 }

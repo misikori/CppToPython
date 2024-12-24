@@ -98,13 +98,24 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         return statement;
     }
 
+    @Override
+    public ASTNode visitConstantExpression(CPP14Parser.ConstantExpressionContext ctx) {
+
+        ExpressionNode conditional = new ExpressionNode();
+        visitConditionalExpression(ctx.conditionalExpression(), conditional);
+
+        return conditional;
+    }
+
     private ASTNode visitLabeledStatement(CPP14Parser.LabeledStatementContext ctx, LabeledStatement statement) {
 
         System.out.println("LabeledStatement");
-        String  lable = ctx.getText();
-        statement.setLabel(lable);
-        statement.setBody(visitStatement(ctx.statement()));
-        //TODO: add for Visit for ConstrantExprestion and  other Expreseion for conditional part of switch
+        String label = ctx.Case() != null ? ctx.Case().getText() : ctx.Default().getText();
+        statement.setLabel(label);
+        statement.setStatement(visitStatement(ctx.statement()));
+        if (ctx.constantExpression() != null) {
+            statement.setCaseExpression(visitConstantExpression(ctx.constantExpression()));
+        }
         return statement;
     }
 
@@ -370,30 +381,34 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     public ASTNode visitAssignmentExpression(CPP14Parser.AssignmentExpressionContext ctx) {
         System.out.println("Assignment expression encountered.");
-        //TODO SHOULD CHANGE THIS
+
         if(ctx.conditionalExpression() != null) {
+            return visitConditionalExpression(ctx.conditionalExpression());
+        }
+        else{
+            ExpressionNode left = (ExpressionNode) visitLogicalOrExpression(ctx.logicalOrExpression());
+            String operator = ctx.assignmentOperator().getText();
+            ExpressionNode right = (ExpressionNode) visitInitializerClause(ctx.initializerClause());
 
-            ExpressionNode conditional = new ExpressionNode();
-            visitConditionalExpression(ctx.conditionalExpression(),conditional);
-            return conditional;
-
+            // return new AssignmentNode?
         }
 
         return null;
     }
 
 
-    public void visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ExpressionNode conditional) {
+    public ExpressionNode visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ExpressionNode conditional) {
 
-        System.out.println("Conditional expression encountered.");
-        if(ctx.logicalOrExpression() != null) {
-            visitLogicalOrExpression(ctx.logicalOrExpression(), conditional);
+        ExpressionNode condition = (ExpressionNode) visitLogicalOrExpression(ctx.logicalOrExpression());
+        if (ctx.Question() != null) {
+            ExpressionNode trueBranch = (ExpressionNode) visitExpression(ctx.expression());
+            ExpressionNode falseBranch = (ExpressionNode) visitAssignmentExpression(ctx.assignmentExpression());
+
+            return new ConditionalExpressionNode(condition, trueBranch, falseBranch);
         }
 
-        if(ctx.Question() != null) {
-            var expression = new ExpressionNode();
-//            return visitExpression(ctx.expression(), expression);
-        }
+        return condition;
+
     }
     private  <T> void visitExpression_temp(
             List<T> list,
@@ -497,7 +512,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         }else{
             value = "";
         }
-        System.out.println("Opet djubre jedno " + value );
         visitExpression_temp(
                 ctx.shiftExpression(),
                 "RelationalExpression",
@@ -578,6 +592,8 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
             // for l in literal ..
             var l = new LiteralNode();
             l.setValue(ctx.getText());
+            expression.setValue(ctx.getText());
+            expression.setType("literal");
         }
 
         if (ctx.expression() != null) {
@@ -585,7 +601,16 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         }
 
         if (ctx.idExpression() != null) {
+            visitIdExpression(ctx.idExpression(), expression);
             // visitIdExpression..
+        }
+    }
+
+    private void visitIdExpression(CPP14Parser.IdExpressionContext ctx, ExpressionNode expression) {
+
+        if (ctx.unqualifiedId() != null) {
+            expression.setType("unqualifiedId");
+            expression.setValue(ctx.unqualifiedId().getText());
         }
     }
 

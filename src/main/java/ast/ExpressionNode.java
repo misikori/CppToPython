@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ExpressionNode extends ASTNode {
     private String type;
+    private String operator;
     private List<ExpressionNode> children = new ArrayList<ExpressionNode>();
     private String value;
 
@@ -31,9 +32,11 @@ public class ExpressionNode extends ASTNode {
         this.children = children;
         this.type = type;
     }
+
     public String getValue() {
         return value;
     }
+
     public void setValue(String value) {
         this.value = value;
     }
@@ -43,20 +46,27 @@ public class ExpressionNode extends ASTNode {
         this.children.add(child);
     }
 
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append(type);
-        str.append("{");
-        if(value != null){
-            str.append(" value: ").append(value);
+        if (operator != null) {
+            str.append(" [operator: ").append(operator).append("]");
         }
-        if(!children.isEmpty()){
-            str.append(" children:").append(children);
+        if (value != null) {
+            str.append(" [value: ").append(value).append("]");
         }
-        str.append("}");
-
+        if (!children.isEmpty()) {
+            str.append(" {children: ").append(children).append("}");
+        }
         return str.toString();
-
     }
 }
