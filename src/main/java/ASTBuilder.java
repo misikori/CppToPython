@@ -26,7 +26,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitStatement(CPP14Parser.StatementContext ctx) {
-
+        System.out.println("This is statement that im looking at:" + ctx.getText());
         if(ctx.compoundStatement() != null){
 
             return visitCompoundStatement(ctx.compoundStatement());
@@ -74,7 +74,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
         }
         if (ctx.expressionStatement() != null) {
-            System.out.println("ExpressionStatement");
+            //System.out.println("ExpressionStatement");
             CPP14Parser.ExpressionStatementContext context = ctx.expressionStatement();
             CPP14Parser.ExpressionContext exp = context.expression();
             return visitExpression(exp);
@@ -94,22 +94,37 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     private ASTNode visitJumpStatement(CPP14Parser.JumpStatementContext ctx, JumpStatement statement) {
-        statement.setName(ctx.toString());
+        System.out.println("Im in: ");
+        if(ctx.Break() != null){
+            //TODO add break;
+
+        }else if(ctx.Return() != null){
+            statement.setName("return");
+            statement.setExpression(visitExpression(ctx.expression()));
+
+        }else if(ctx.Continue() != null){
+            // TODO add continue;
+
+        }else if(ctx.Goto() != null){
+            // TODO add Goto;
+
+        }
+
+        System.out.println("THIS IS STATEMENT: " + statement.toString());
         return statement;
     }
 
     @Override
     public ASTNode visitConstantExpression(CPP14Parser.ConstantExpressionContext ctx) {
+        //TODO: fix this  constant expression parser
+        ExpressionNode constatExpresion = new ExpressionNode();
 
-        ExpressionNode conditional = new ExpressionNode();
-        visitConditionalExpression(ctx.conditionalExpression(), conditional);
-
-        return conditional;
+        return constatExpresion;
     }
 
     private ASTNode visitLabeledStatement(CPP14Parser.LabeledStatementContext ctx, LabeledStatement statement) {
 
-        System.out.println("LabeledStatement");
+        //System.out.println("LabeledStatement");
         String label = ctx.Case() != null ? ctx.Case().getText() : ctx.Default().getText();
         statement.setLabel(label);
         statement.setStatement(visitStatement(ctx.statement()));
@@ -119,9 +134,9 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         return statement;
     }
 
-    @Override
-    public ASTNode visitCondition(CPP14Parser.ConditionContext ctx){
-
+    public ASTNode visitCondition(CPP14Parser.ConditionContext ctx) {
+        //System.out.println("Condition encountered.");
+        //System.out.println(ctx.getText());
        return visitExpression(ctx.expression());
     }
     public ASTNode visitExpression(CPP14Parser.ExpressionContext ctx) {
@@ -154,7 +169,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if (ctx.functionBody().compoundStatement() != null &&
                 ctx.functionBody().compoundStatement().statementSeq() != null) {
             for (CPP14Parser.StatementContext stmt : ctx.functionBody().compoundStatement().statementSeq().statement()) {
-                System.out.println(stmt.getText());
+                //System.out.println(stmt.getText());
                 ASTNode statementNode = visit(stmt);
                 if (statementNode != null) {
                     functionNode.addBodyNode(statementNode);
@@ -190,8 +205,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitDeclarator(CPP14Parser.DeclaratorContext ctx) {
 
-
-        System.out.println("Declarator encountered.");
         DeclaratorNode declaratorNode = new DeclaratorNode();
 
         if(ctx.pointerDeclarator() != null) {
@@ -204,8 +217,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     public ASTNode visitPointerDeclarator(CPP14Parser.PointerDeclaratorContext ctx, DeclaratorNode declaratorNode) {
-
-        System.out.println("PointerDeclarator encountered.");
 
         if(ctx.pointerOperator() != null)
         {
@@ -227,7 +238,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     public ASTNode visitNoPointerDeclarator(CPP14Parser.NoPointerDeclaratorContext ctx, DeclaratorNode declaratorNode) {
-        System.out.println("NoPointerDeclarator encountered.");
 
         if(ctx.noPointerDeclarator() != null) {
             visitNoPointerDeclarator(ctx.noPointerDeclarator(), declaratorNode);
@@ -268,7 +278,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     public String processDeclaratorid(CPP14Parser.DeclaratoridContext ctx){
-        System.out.println("Declarator id encountered.");
+        //System.out.println("Declarator id encountered.");
         return ctx.getText();
     }
 
@@ -278,7 +288,8 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitCompoundStatement(CPP14Parser.CompoundStatementContext ctx) {
         List<ASTNode> statements = new ArrayList<>();
-
+        System.out.println("This is what happends in compound statement");
+        System.out.println(ctx.statementSeq().getText());
         if (ctx.statementSeq() != null) {
             for (CPP14Parser.StatementContext statementContext : ctx.statementSeq().statement()) {
                 ASTNode statementNode = visitStatement(statementContext);
@@ -287,7 +298,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
                 }
             }
         }
-
+        System.out.println("This is list of statements  " + statements.getFirst());
         return new CompoundStatementNode(statements);
     }
 
@@ -301,40 +312,40 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
             return visitBlockDeclaration(ctx.blockDeclaration());
         }
         if (ctx.functionDefinition() != null) {
-            System.out.println("Function definition encountered.");
+            //System.out.println("Function definition encountered.");
             return visitFunctionDefinition(ctx.functionDefinition());
         }
         if (ctx.templateDeclaration() != null) {
-            System.out.println("Template declaration encountered.");
+            //System.out.println("Template declaration encountered.");
             return null; // Replace with actual handling logic
         }
         if (ctx.explicitInstantiation() != null) {
-            System.out.println("Explicit instantiation encountered.");
+            //System.out.println("Explicit instantiation encountered.");
             return null;
         }
 
         if (ctx.explicitSpecialization() != null) {
-            System.out.println("Explicit specialization encountered.");
+            //System.out.println("Explicit specialization encountered.");
             return null;
         }
 
         if (ctx.linkageSpecification() != null) {
-            System.out.println("Linkage specification encountered.");
+            //System.out.println("Linkage specification encountered.");
             return null;
         }
 
         if (ctx.namespaceDefinition() != null) {
-            System.out.println("Namespace definition encountered.");
+            //System.out.println("Namespace definition encountered.");
             return null;
         }
 
         if (ctx.emptyDeclaration_() != null) {
-            System.out.println("Empty declaration encountered.");
+            //System.out.println("Empty declaration encountered.");
             return null;
         }
 
         if (ctx.attributeDeclaration() != null) {
-            System.out.println("Attribute declaration encountered.");
+            //System.out.println("Attribute declaration encountered.");
             return null;
         }
         System.out.println("Unknown declaration type.");
@@ -343,7 +354,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     public void visitSimpleDeclaration(CPP14Parser.SimpleDeclarationContext ctx, VariableDeclarationNode variable) {
         if(ctx.declSpecifierSeq() != null) {
-            variable.setType(ctx.declSpecifierSeq().getText());
+            visitDeclSpecifierSeq(ctx.declSpecifierSeq(), variable);
         }
         if(ctx.initDeclaratorList() != null) {
             for (var c : ctx.initDeclaratorList().initDeclarator()) {
@@ -361,9 +372,69 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         }
 
     }
+    public void visitDeclSpecifierSeq(CPP14Parser.DeclSpecifierSeqContext ctx, VariableDeclarationNode variable) {
+
+        //TODO convert to list maybe ?
+//        List<DeclaratorTypeNode> nodes = new ArrayList<>();
+//        if (ctx.declSpecifier() != null) {
+//            List<CPP14Parser.DeclSpecifierContext> list = ctx.declSpecifier();
+//            for(CPP14Parser.DeclSpecifierContext elem : list) {
+//
+//                DeclaratorTypeNode node = new DeclaratorTypeNode();
+//                nodes.add(visitDeclSpecifier(elem, node));
+//            }
+//        }
+        DeclaratorTypeNode node = new DeclaratorTypeNode();
+        visitDeclSpecifier(ctx.declSpecifier(0), node);
+        //System.out.println("Declaration specifier list : " + node.toString());
+        variable.setType(node.toString());
+    }
+
+    private DeclaratorTypeNode visitDeclSpecifier(CPP14Parser.DeclSpecifierContext ctx, DeclaratorTypeNode node) {
+
+        if(ctx.typeSpecifier() != null) {
+            visitTypeSpeficier(ctx.typeSpecifier(), node);
+        }
+        return null;
+    }
+
+    private void visitTypeSpeficier(CPP14Parser.TypeSpecifierContext ctx, DeclaratorTypeNode node) {
+
+
+        if (ctx.trailingTypeSpecifier() != null) {
+            visitTrailingTypeSpecifier(ctx.trailingTypeSpecifier(), node);
+        }
+    }
+
+    private void visitTrailingTypeSpecifier(CPP14Parser.TrailingTypeSpecifierContext ctx, DeclaratorTypeNode node) {
+
+        if (ctx.simpleTypeSpecifier() != null) {
+            visitSimpleTypeSpecifier(ctx.simpleTypeSpecifier(), node);
+        }
+    }
+
+    private void visitSimpleTypeSpecifier(CPP14Parser.SimpleTypeSpecifierContext ctx, DeclaratorTypeNode node) {
+        //TODO this should be fixed MUST
+        if(ctx.theTypeName() != null) {
+            CPP14Parser.TheTypeNameContext typename = ctx.theTypeName();
+            //System.out.println("This is simple type:");
+            //System.out.println(typename.getText());
+            if(typename != null) {
+                if(ctx.theTypeName() != null) {
+                    if(ctx.theTypeName().className() != null) {
+                        if(ctx.theTypeName().className().simpleTemplateId() != null) {
+                            if(ctx.theTypeName().className().simpleTemplateId().templateName() != null) {
+                                node.setName(ctx.theTypeName().className().simpleTemplateId().templateName().getText());
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 
     public ASTNode visitInitializer(CPP14Parser.InitializerContext ctx) {
-        System.out.println("Initializer encountered.");
         if (ctx.braceOrEqualInitializer() != null) {
             //TODO add if you have braces
             return visitInitializerClause(ctx.braceOrEqualInitializer().initializerClause());
@@ -372,15 +443,29 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     public ASTNode visitInitializerClause(CPP14Parser.InitializerClauseContext ctx) {
-        System.out.println("Initializer clause encountered.");
         if (ctx.assignmentExpression() != null) {
             return visitAssignmentExpression(ctx.assignmentExpression());
+        }
+        else if (ctx.bracedInitList() != null) {
+            return visitInitializerList(ctx.bracedInitList().initializerList());
         }
         return null;
     }
 
+    public ASTNode visitInitializerList(CPP14Parser.InitializerListContext ctx) {
+
+        ExpressionNode exp = new ExpressionNode();
+        List<CPP14Parser.InitializerClauseContext> list = ctx.initializerClause();
+
+        for(CPP14Parser.InitializerClauseContext elem : list){
+
+            exp.addChildren(visitInitializerClause(elem));
+        }
+        return exp;
+    }
+
     public ASTNode visitAssignmentExpression(CPP14Parser.AssignmentExpressionContext ctx) {
-        System.out.println("Assignment expression encountered.");
+        //System.out.println("Assignment expression encountered.");
 
         if(ctx.conditionalExpression() != null) {
             return visitConditionalExpression(ctx.conditionalExpression());
@@ -395,21 +480,23 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
         return null;
     }
+    public ASTNode visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx) {
 
-
-    public ExpressionNode visitConditionalExpression(CPP14Parser.ConditionalExpressionContext ctx, ExpressionNode conditional) {
-
-        ExpressionNode condition = (ExpressionNode) visitLogicalOrExpression(ctx.logicalOrExpression());
-        if (ctx.Question() != null) {
-            ExpressionNode trueBranch = (ExpressionNode) visitExpression(ctx.expression());
-            ExpressionNode falseBranch = (ExpressionNode) visitAssignmentExpression(ctx.assignmentExpression());
-
-            return new ConditionalExpressionNode(condition, trueBranch, falseBranch);
+        // logicalOr (? expr : assignExpr)?
+        ExpressionNode exp = new ExpressionNode();
+        if(ctx.logicalOrExpression() != null) {
+            visitLogicalOrExpression(ctx.logicalOrExpression(), exp);
+            return exp;
         }
+        else{
 
-        return condition;
-
+            return visitAssignmentExpression(ctx.assignmentExpression());
+        }
     }
+    // [unqualifiedId [value: x]
+
+
+
     private  <T> void visitExpression_temp(
             List<T> list,
             String type,
@@ -588,22 +675,26 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     private void visitPrimaryExpression(CPP14Parser.PrimaryExpressionContext ctx, ExpressionNode expression) {
+
+
+
         if (ctx.literal() != null) {
-            // for l in literal ..
+            //TODO for l in literal ..
             var l = new LiteralNode();
             l.setValue(ctx.getText());
-            expression.setValue(ctx.getText());
-            expression.setType("literal");
+//            expression.setValue(ctx.getText());
+//            expression.setType("literal");
+            expression.addChildren(l);
         }
 
-        if (ctx.expression() != null) {
-            visitExpression(ctx.expression());
-        }
-
-        if (ctx.idExpression() != null) {
-            visitIdExpression(ctx.idExpression(), expression);
-            // visitIdExpression..
-        }
+//        if (ctx.expression() != null) {
+//            visitExpression(ctx.expression());
+//        }
+//
+//        if (ctx.idExpression() != null) {
+//            visitIdExpression(ctx.idExpression(), expression);
+//            // visitIdExpression..
+//        }
     }
 
     private void visitIdExpression(CPP14Parser.IdExpressionContext ctx, ExpressionNode expression) {
@@ -614,10 +705,10 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         }
     }
 
-    @Override
-    public ASTNode visitExpressionStatement(CPP14Parser.ExpressionStatementContext ctx) {
-        return null;
-    }
+//    @Override
+//    public ASTNode visitExpressionStatement(CPP14Parser.ExpressionStatementContext ctx) {
+//        return null;
+//    }
 
 
 }

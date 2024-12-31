@@ -40,4 +40,9 @@ public class LabeledStatement extends ASTNode {
     public String toString() {
         return "LabeledStatement {" + "label=" + label + ", caseExpr=" + caseExpression + ", statement=" + statement + '}';
     }
+
+    @Override
+    public String convert() {
+        return "";
+    }
 }

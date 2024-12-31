@@ -18,6 +18,11 @@ public class LiteralNode extends ASTNode {
 
     @Override
     public String toString() {
-        return "";
+        return "LiteralNode{ " + value + " }";
+    }
+
+    @Override
+    public String convert() {
+        return value;
     }
 }

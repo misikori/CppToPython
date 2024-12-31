@@ -27,4 +27,9 @@ public class SelectionNode extends ASTNode {
     public String toString() {
         return "SelectionNode{ type=" + type + ", condition=" + condition + '}';
     }
+
+    @Override
+    public String convert() {
+        return "";
+    }
 }

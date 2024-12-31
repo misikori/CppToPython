@@ -19,8 +19,41 @@ public class FunctionNode extends ASTNode {
         body.add(node);
     }
 
+    public String getReturn_value() {
+        return return_value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<ASTNode> getBody() {
+        return body;
+    }
+
     @Override
     public String toString() {
         return "Function{"+"retun_value=" +return_value + ", name='" + name + '\'' + ", body=" + body + '}';
+    }
+
+    @Override
+    public String convert() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("deff ");
+        sb.append(name);
+        sb.append("(");
+        //TODO add append for arguments
+        sb.append(")");
+        sb.append("->");
+        sb.append(return_value);
+        sb.append(":\n");
+
+        for (ASTNode node : body) {
+            sb.append("\t");
+            sb.append(node.convert());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

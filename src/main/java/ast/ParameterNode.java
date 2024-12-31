@@ -17,4 +17,9 @@ public class ParameterNode extends ASTNode {
     public String toString() {
         return "ParameterNode{" + "type='" + type + '\'' + ", DeclarationNode=" + name.toString() + '}';
     }
+
+    @Override
+    public String convert() {
+        return "";
+    }
 }

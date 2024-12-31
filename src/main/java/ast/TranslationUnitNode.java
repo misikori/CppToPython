@@ -9,8 +9,26 @@ public class TranslationUnitNode extends ASTNode {
         this.declarations = declarations;
     }
 
+    public List<ASTNode> getDeclarations() {
+        return declarations;
+    }
     @Override
     public String toString() {
         return "TranslationUnit{" + declarations + "}";
+    }
+
+    @Override
+    public String convert() {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (ASTNode declaration : declarations) {
+            sb.append(declaration.convert());
+            sb.append("\n");
+        }
+
+        return sb.toString();
+
+
     }
 }

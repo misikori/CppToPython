@@ -43,6 +43,12 @@ public class DeclaratorNode extends ASTNode {
         return sb.toString();
     }
 
+    @Override
+    public String convert() {
+        //TODO fix for not basics :)
+        return declaratorId;
+    }
+
     public void setName(String s) {
         this.declaratorId = s;
     }
