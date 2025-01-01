@@ -40,7 +40,7 @@ public class FunctionNode extends ASTNode {
     public String convert() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("deff ");
+        sb.append("def ");
         sb.append(name);
         sb.append("(");
         //TODO add append for arguments

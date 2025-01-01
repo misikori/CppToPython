@@ -587,18 +587,24 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     private void visitRelationalExpression(CPP14Parser.RelationalExpressionContext ctx, ExpressionNode expression) {
 
-        String value = ctx.Greater().toString();
-        if (ctx.GreaterEqual() != null) {
-            value  = ">=";
-        }else if(ctx.LessEqual() != null){
-            value = "<=";
-        }else if(ctx.Greater()!=null){
-            value = ">";
-        }else if(ctx.Less()!=null){
-            value = "<";
-        }else{
-            value = "";
+        String value= "";
+
+        if(!ctx.Less().isEmpty()){
+            value = ctx.Less().getFirst().toString();
         }
+        else if (!ctx.LessEqual().isEmpty()) {
+            value = ctx.LessEqual().getFirst().toString();
+
+        }
+        else if(!ctx.GreaterEqual().isEmpty()){
+            value = ctx.GreaterEqual().getFirst().toString();
+
+        }
+        else if(!ctx.Greater().isEmpty()){
+            value = ctx.Greater().getFirst().toString();
+
+        }
+
         visitExpression_temp(
                 ctx.shiftExpression(),
                 "RelationalExpression",
