@@ -164,7 +164,9 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         DeclaratorNode functionDeclaration = (DeclaratorNode) visit(ctx.declarator());
         String return_value = ctx.declSpecifierSeq().getText();
 
-        FunctionNode functionNode = new FunctionNode(return_value, functionDeclaration.toString());
+        System.out.println("Parameters DECL : " + functionDeclaration.getParameters());
+        FunctionNode functionNode = new FunctionNode(return_value, functionDeclaration.getDeclaratorId());
+        functionNode.setArguments(functionDeclaration.getParameters());
 
         if (ctx.functionBody().compoundStatement() != null &&
                 ctx.functionBody().compoundStatement().statementSeq() != null) {

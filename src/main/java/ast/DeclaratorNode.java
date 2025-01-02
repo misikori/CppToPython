@@ -65,6 +65,10 @@ public class DeclaratorNode extends ASTNode {
         return type;
     }
 
+    public List<ParameterNode> getParameters() {
+        return parameters;
+    }
+
     public String getDeclaratorId() {
         return declaratorId;
     }

@@ -2,7 +2,7 @@
 #include <vector>
 
 
-int main(){
+int main(int a, float b){
 
 
    int x = 5;

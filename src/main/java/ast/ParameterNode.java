@@ -2,8 +2,8 @@ package ast;
 
 public class ParameterNode extends ASTNode {
 
-    String type;
-    DeclaratorNode name;
+    public String type;
+    public DeclaratorNode name;
 
     public ParameterNode(String type, DeclaratorNode name) {
         this.name = name;
@@ -20,6 +20,13 @@ public class ParameterNode extends ASTNode {
 
     @Override
     public String convert() {
-        return "";
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(type);
+        sb.append(" ");
+        sb.append(name.getDeclaratorId());
+
+        return sb.toString();
     }
 }
