@@ -88,7 +88,8 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if (ctx.jumpStatement() != null) {
             JumpStatement jumpStatement = new JumpStatement();
 
-            return visitJumpStatement(ctx.jumpStatement(), jumpStatement);
+            visitJumpStatement(ctx.jumpStatement(), jumpStatement);
+            return jumpStatement;
         }
         return null;
     }
@@ -109,8 +110,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
             // TODO add Goto;
 
         }
-
-        System.out.println("THIS IS STATEMENT: " + statement.toString());
         return statement;
     }
 
@@ -163,8 +162,6 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
         DeclaratorNode functionDeclaration = (DeclaratorNode) visit(ctx.declarator());
         String return_value = ctx.declSpecifierSeq().getText();
-
-        System.out.println("Parameters DECL : " + functionDeclaration.getParameters());
         FunctionNode functionNode = new FunctionNode(return_value, functionDeclaration.getDeclaratorId());
         functionNode.setArguments(functionDeclaration.getParameters());
 
@@ -617,7 +614,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     private void visitShiftExpression(CPP14Parser.ShiftExpressionContext ctx, ExpressionNode expression) {
-        String value = ctx.getText();
+        String value = "";
         visitExpression_temp(
                 ctx.additiveExpression(),
                 "ShiftExpression",
@@ -629,7 +626,14 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     private void visitAdditiveExpression(CPP14Parser.AdditiveExpressionContext ctx, ExpressionNode expression) {
 
-        String value = ctx.getText();
+        String value = "";
+
+        if(ctx.Plus() != null && ctx.Plus().size() > 0){
+            value = ctx.Plus().getFirst().toString();
+        }else if(ctx.Minus() != null){
+            value = ctx.Minus().toString();
+        }
+        System.out.println(value);
         visitExpression_temp(
                 ctx.multiplicativeExpression(),
                 "AdditiveExpression",
@@ -674,12 +678,23 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         if (ctx.postfixExpression() != null) {
             visitPostfixExpression(ctx.postfixExpression(), expression);
         }
+
     }
 
     private void visitPostfixExpression(CPP14Parser.PostfixExpressionContext ctx, ExpressionNode expression) {
+
+        if (ctx.postfixExpression() != null) {
+            expression.setType("PostfixExpression");
+            expression.setValue(ctx.getText());
+
+            if (ctx.expressionList() != null) {
+            //TODO maybe fix this part
+            }
+        }
         if (ctx.primaryExpression() != null) {
             visitPrimaryExpression(ctx.primaryExpression(), expression);
         }
+
     }
 
     private void visitPrimaryExpression(CPP14Parser.PrimaryExpressionContext ctx, ExpressionNode expression) {

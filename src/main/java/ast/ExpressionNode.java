@@ -77,6 +77,19 @@ public class ExpressionNode extends ASTNode {
     public String convert() {
         StringBuilder str = new StringBuilder();
 
+        if(type != null && type.equals("AdditiveExpression")){
+            for(int i=0; i<children.size(); i++){
+                str.append(children.get(i).convert());
+                str.append(" ");
+                if(i ==children.size()-1){
+                    str.append(" ");
+                }else{
+                    str.append(value).append(" ");
+
+                }
+            }
+            return str.toString();
+        }
         if(type != null && type.equals("RelationalExpression")){
 
             for(int i=0; i<children.size(); i++){
@@ -88,6 +101,26 @@ public class ExpressionNode extends ASTNode {
                     str.append(value).append(" ");
                 }
             }
+            return str.toString();
+        }
+        if(type != null && type.equals("ShiftExpression")){
+
+            if(children.getFirst().convert().equals("print")){
+                str.append(children.getFirst().convert());
+                str.append("(");
+                for(int i=1; i<children.size(); i++){
+                    str.append(children.get(i).convert());
+                }
+                str.append(")");
+            }
+            return str.toString();
+        }
+        if(type != null && type.equals("PostfixExpression")){
+            for(int i=0; i<children.size(); i++){
+                str.append(children.get(i).convert());
+            }
+            //TODO fix this shit pls
+            str.append(this.getValue());
             return str.toString();
         }
         for (ASTNode child : children) {

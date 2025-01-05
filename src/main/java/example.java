@@ -20,7 +20,7 @@ public class example {
                 int y;
                 std::cout << "Hello, C++!";
                 """;
-        CharStream charStream = CharStreams.fromFileName("src/main/java/tests/if.cpp");
+        CharStream charStream = CharStreams.fromFileName("src/main/java/tests/function.cpp");
 
 //        CharStream charStream = CharStreams.fromString("#include<iostream>\n\n int main(){\n" +
 //                "if(x>=y){ x = a || b || (c && d);} \n else{ x = 3;}\n" +

@@ -23,6 +23,11 @@ public class LiteralNode extends ASTNode {
 
     @Override
     public String convert() {
+
+        if(value.equals("std::cout"))
+            return "print";
+        if(value.equals("std::endl"))
+            return "\\n";
         return value;
     }
 }
