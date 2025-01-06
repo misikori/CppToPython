@@ -22,10 +22,11 @@ public class VariableDeclarationNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
 
+        String indent = "\t".repeat(indent_level);
         StringBuilder result = new StringBuilder();
-        result.append(name.convert());
+        result.append(indent).append(name.convert(indent_level+1));
         result.append(" = ");
 
         //TODO add for different types of variables:
@@ -36,7 +37,7 @@ public class VariableDeclarationNode extends ASTNode {
             List<ASTNode> children = exp.getChildren();
             for( int i = 0; i < children.size(); i += 1) {
 
-                result.append(children.get(i).convert());
+                result.append(children.get(i).convert(indent_level));
                 if (i != children.size() - 1) {
                     result.append(", ");
                 }
@@ -44,7 +45,7 @@ public class VariableDeclarationNode extends ASTNode {
             result.append(']');
         }
         else if (expression != null) {
-            result.append(expression.convert());
+            result.append(expression.convert(indent_level));
         }
         return result.toString();
     }

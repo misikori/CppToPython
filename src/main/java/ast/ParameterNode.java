@@ -19,12 +19,12 @@ public class ParameterNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
 
         StringBuilder sb = new StringBuilder();
 
         sb.append(type);
-        sb.append(" ");
+        sb.append(" : ");
         sb.append(name.getDeclaratorId());
 
         return sb.toString();

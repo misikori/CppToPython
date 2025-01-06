@@ -26,7 +26,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitStatement(CPP14Parser.StatementContext ctx) {
-        System.out.println("This is statement that im looking at:" + ctx.getText());
+       // System.out.println("This is statement that im looking at:" + ctx.getText());
         if(ctx.compoundStatement() != null){
 
             return visitCompoundStatement(ctx.compoundStatement());
@@ -95,7 +95,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     }
 
     private ASTNode visitJumpStatement(CPP14Parser.JumpStatementContext ctx, JumpStatement statement) {
-        System.out.println("Im in: ");
+        //System.out.println("Im in: ");
         if(ctx.Break() != null){
             //TODO add break;
 
@@ -287,8 +287,8 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitCompoundStatement(CPP14Parser.CompoundStatementContext ctx) {
         List<ASTNode> statements = new ArrayList<>();
-        System.out.println("This is what happends in compound statement");
-        System.out.println(ctx.statementSeq().getText());
+        //System.out.println("This is what happends in compound statement");
+        //System.out.println(ctx.statementSeq().getText());
         if (ctx.statementSeq() != null) {
             for (CPP14Parser.StatementContext statementContext : ctx.statementSeq().statement()) {
                 ASTNode statementNode = visitStatement(statementContext);
@@ -297,7 +297,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
                 }
             }
         }
-        System.out.println("This is list of statements  " + statements.getFirst());
+        //System.out.println("This is list of statements  " + statements.getFirst());
         return new CompoundStatementNode(statements);
     }
 
@@ -633,7 +633,7 @@ public class ASTBuilder extends CPP14ParserBaseVisitor<ASTNode> {
         }else if(ctx.Minus() != null){
             value = ctx.Minus().toString();
         }
-        System.out.println(value);
+        //System.out.println(value);
         visitExpression_temp(
                 ctx.multiplicativeExpression(),
                 "AdditiveExpression",

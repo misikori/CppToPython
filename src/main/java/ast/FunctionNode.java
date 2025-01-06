@@ -48,33 +48,34 @@ public class FunctionNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
+
+
+        String indent = "\t".repeat(indent_level);
         StringBuilder sb = new StringBuilder();
 
-        sb.append("def ");
-        sb.append(name);
-        sb.append("(");
-
-        if(arguments != null) {
+        sb.append(indent).append("def ").append(name).append("(");
+        if (arguments != null) {
             var size = arguments.size();
             for (var i = 0; i < size; i++) {
-                sb.append(arguments.get(i).convert());
+                sb.append(arguments.get(i).convert(indent_level));
                 if (i < size - 1) {
                     sb.append(", ");
                 }
             }
         }
-        //TODO add append for arguments
         sb.append(")");
-        sb.append("->");
-        sb.append(return_value);
+
+        if (return_value != null && !return_value.isEmpty()) {
+            sb.append(" -> ").append(return_value);
+        }
+
         sb.append(":\n");
 
         for (ASTNode node : body) {
-            sb.append("\t");
-            sb.append(node.convert());
-            sb.append("\n");
+            sb.append(node.convert(indent_level + 1)).append("\n");
         }
-        return sb.toString();
+        return sb.toString().trim();
     }
+
 }

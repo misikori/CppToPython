@@ -5,5 +5,5 @@ public abstract class ASTNode {
 
 
     public abstract String toString();
-    public abstract String convert();
+    public abstract String convert(int indent_level);
 }

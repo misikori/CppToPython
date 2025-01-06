@@ -11,7 +11,7 @@ public class PythonCodeGenerator {
 
     public String convertProgram(ASTNode node) {
 
-        return node.convert();
+        return node.convert(0);
     }
 
 

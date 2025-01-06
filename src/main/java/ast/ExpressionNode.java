@@ -74,12 +74,13 @@ public class ExpressionNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
+
         StringBuilder str = new StringBuilder();
 
         if(type != null && type.equals("AdditiveExpression")){
             for(int i=0; i<children.size(); i++){
-                str.append(children.get(i).convert());
+                str.append(children.get(i).convert(indent_level));
                 str.append(" ");
                 if(i ==children.size()-1){
                     str.append(" ");
@@ -93,7 +94,7 @@ public class ExpressionNode extends ASTNode {
         if(type != null && type.equals("RelationalExpression")){
 
             for(int i=0; i<children.size(); i++){
-                str.append(children.get(i).convert());
+                str.append(children.get(i).convert(indent_level));
                 str.append(" ");
                 if(i == children.size()-1){
                     str.append("");
@@ -105,11 +106,12 @@ public class ExpressionNode extends ASTNode {
         }
         if(type != null && type.equals("ShiftExpression")){
 
-            if(children.getFirst().convert().equals("print")){
-                str.append(children.getFirst().convert());
+            if(children.getFirst().convert(indent_level+1).equals("print")){
+                str.append(children.getFirst().convert(indent_level));
                 str.append("(");
                 for(int i=1; i<children.size(); i++){
-                    str.append(children.get(i).convert());
+                    str.append(children.get(i).convert(indent_level));
+                    str.append("+");
                 }
                 str.append(")");
             }
@@ -117,14 +119,14 @@ public class ExpressionNode extends ASTNode {
         }
         if(type != null && type.equals("PostfixExpression")){
             for(int i=0; i<children.size(); i++){
-                str.append(children.get(i).convert());
+                str.append(children.get(i).convert(indent_level));
             }
             //TODO fix this shit pls
             str.append(this.getValue());
             return str.toString();
         }
         for (ASTNode child : children) {
-            str.append(child.convert());
+            str.append(child.convert(indent_level+1));
         }
         return str.toString();
     }

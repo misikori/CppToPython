@@ -18,17 +18,18 @@ public class TranslationUnitNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
+
+
+        String indent = "\t".repeat(indent_level);
 
         StringBuilder sb = new StringBuilder();
 
         for (ASTNode declaration : declarations) {
-            sb.append(declaration.convert());
-            sb.append("\n");
+            sb.append(indent)
+                    .append(declaration.convert(indent_level))
+                    .append("\n");
         }
-
-        return sb.toString();
-
-
+        return sb.toString().trim();
     }
 }

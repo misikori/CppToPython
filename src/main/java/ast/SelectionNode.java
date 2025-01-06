@@ -29,7 +29,7 @@ public class SelectionNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
         return "";
     }
 }

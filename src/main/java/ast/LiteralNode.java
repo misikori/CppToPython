@@ -22,12 +22,11 @@ public class LiteralNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
-
+    public String convert(int indent_level) {
         if(value.equals("std::cout"))
             return "print";
         if(value.equals("std::endl"))
-            return "\\n";
+            return "\"\\n\"";
         return value;
     }
 }

@@ -44,7 +44,7 @@ public class DeclaratorNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
+    public String convert(int indent_level) {
         //TODO fix for not basics :)
         return declaratorId;
     }

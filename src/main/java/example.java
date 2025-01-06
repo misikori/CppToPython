@@ -20,20 +20,7 @@ public class example {
                 int y;
                 std::cout << "Hello, C++!";
                 """;
-        CharStream charStream = CharStreams.fromFileName("src/main/java/tests/function.cpp");
-
-//        CharStream charStream = CharStreams.fromString("#include<iostream>\n\n int main(){\n" +
-//                "if(x>=y){ x = a || b || (c && d);} \n else{ x = 3;}\n" +
-//                "    switch (choice) {\n" +
-//                "        case 1:\n" +
-//                "            cout << \"You selected option 1.\" << endl;\n" +
-//                "            break;\n" +
-//                "        default:\n" +
-//                "            cout << \"Invalid choice. Please select a number between 1 and 3.\" << endl;\n" +
-//                "            break;\n" +
-//                "    } \n" +
-//                "std::cout << \"Hello, C++!\";\n}");
-
+        CharStream charStream = CharStreams.fromFileName("src/main/java/tests/basic_if.cpp");
 
         String directoryPath =  "src/main/java/tests/";
         File dorectpry = new File(directoryPath);

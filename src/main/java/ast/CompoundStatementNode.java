@@ -16,7 +16,16 @@ public class CompoundStatementNode extends ASTNode {
     }
 
     @Override
-    public String convert() {
-        return statements.stream().map(ASTNode::convert).collect(Collectors.joining("\n"));
+    public String convert(int indent_level) {
+        StringBuilder sb = new StringBuilder();
+        String indent = "\t".repeat(indent_level);
+
+        for (ASTNode statement : statements) {
+            sb.append(indent)
+                    .append(statement.convert(indent_level + 1))
+                    .append("\n");
+        }
+
+        return sb.toString().trim(); // Remove the trailing newline
     }
 }
