@@ -68,7 +68,7 @@ public class ExpressionNode extends ASTNode {
             str.append(" [value: ").append(value).append("]");
         }
         if (!children.isEmpty()) {
-            str.append(" {children: ").append(children).append("}");
+            str.append(" [children: ").append(children).append("]");
         }
         return str.toString();
     }
@@ -106,12 +106,11 @@ public class ExpressionNode extends ASTNode {
         }
         if(type != null && type.equals("ShiftExpression")){
 
-            if(children.getFirst().convert(indent_level+1).equals("print")){
+            if(children.getFirst().convert(indent_level).trim().equals("print")){
                 str.append(children.getFirst().convert(indent_level));
                 str.append("(");
                 for(int i=1; i<children.size(); i++){
                     str.append(children.get(i).convert(indent_level));
-                    str.append("+");
                 }
                 str.append(")");
             }

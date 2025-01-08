@@ -26,6 +26,6 @@ public class CompoundStatementNode extends ASTNode {
                     .append("\n");
         }
 
-        return sb.toString().trim(); // Remove the trailing newline
+        return sb.toString(); // Remove the trailing newline
     }
 }

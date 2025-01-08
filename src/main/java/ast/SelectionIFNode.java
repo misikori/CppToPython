@@ -33,7 +33,7 @@ public class SelectionIFNode extends SelectionNode {
     @Override
     public String toString(){
 
-        return "SelectionIFNode{ type:" + super.getType() + " condition: "+ super.getCondition() + " ifNodes: " + printIfNodes() + "}";
+        return "SelectionIFNode{ type:" + super.getType() + ", condition: "+ super.getCondition() + ", ifNodes: " + printIfNodes() + "}";
     }
     @Override
 
@@ -41,7 +41,7 @@ public class SelectionIFNode extends SelectionNode {
         // Create indentation string for the current level
         String indent = "\t".repeat(indent_level);
         StringBuilder sb = new StringBuilder();
-        System.out.println(indent.length());
+        System.out.println("indent : " + indent.length());
         for (int i = 0; i < ifNodes.size(); i++) {
             ASTNode node = ifNodes.get(i);
 
@@ -50,16 +50,19 @@ public class SelectionIFNode extends SelectionNode {
                 sb.append(indent).append("if ");
                 sb.append(this.getCondition().convert(indent_level + 1));
                 sb.append(":\n");
+                sb.append(node.convert(indent_level + 1));
+                sb.append("\n");
             } else {
                 // Handle the final 'else' block
                 sb.append(indent).append("else:\n");
-                sb.append(ifNodes.get(i).convert(indent_level + 1));
+                sb.append("\n");
+                sb.append(node.convert(indent_level + 1));
                 sb.append("\n");
             }
 
         }
 
-        return sb.toString().trim(); // Remove trailing newlines
+        return sb.toString(); // Remove trailing newlines -> FIXED
     }
 
 
